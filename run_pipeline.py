@@ -332,7 +332,8 @@ def main():
     log.info("Pushing images to GitHub ...")
     image_urls = push_to_github(slides, article["slug"])
     log.info(f"Pushed {len(image_urls)} images.")
-    time.sleep(5)
+    log.info("Waiting 30s for GitHub CDN to propagate images ...")
+    time.sleep(30)
 
     log.info("Posting to Instagram ...")
     post_to_instagram(image_urls, caption)
