@@ -108,6 +108,7 @@ def fetch_random_unposted() -> dict | None:
         r = requests.get(
             f"https://{SUBDOMAIN}.substack.com/api/v1/posts",
             params={"limit": 10, "offset": offset},
+            headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"},
             timeout=15,
         )
         if not r.ok:
