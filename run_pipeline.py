@@ -100,38 +100,18 @@ def save_posted(posted: set):
 
 
 # ── Substack ───────────────────────────────────────────────────────────────────
-def fetch_random_unposted() -> dict | None:
-    posted = load_posted()
-    # fetch up to 50 posts to build a good pool
-    all_posts = []
-    for offset in range(0, 50, 10):
-        r = requests.get(
-            f"https://{SUBDOMAIN}.substack.com/api/v1/posts",
-            params={"limit": 10, "offset": offset},
-            headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"},
-            timeout=15,
-        )
-        if not r.ok:
-            break
-        batch = r.json().get("posts", r.json()) if isinstance(r.json(), dict) else r.json()
-        if not batch:
-            break
-        all_posts.extend(batch)
+POSTS_CACHE = Path(__file__).parent / "posts_cache.json"
 
+def fetch_random_unposted() -> dict | None:
+    if not POSTS_CACHE.exists():
+        log.error("posts_cache.json not found. Run refresh_posts.py locally first.")
+        return None
+    all_posts = json.loads(POSTS_CACHE.read_text())
+    posted = load_posted()
     unposted = [p for p in all_posts if p.get("slug") and p["slug"] not in posted]
     if not unposted:
         return None
-
-    post = random.choice(unposted)
-    body_html = post.get("body_html", "") or ""
-    body_text = re.sub(r"<[^>]+>", " ", body_html)
-    body_text = re.sub(r"\s+", " ", body_text).strip()
-    return {
-        "slug": post["slug"],
-        "title": post.get("title", ""),
-        "subtitle": post.get("subtitle", ""),
-        "body": body_text[:4000],
-    }
+    return random.choice(unposted)
 
 
 # ── Slide generation ───────────────────────────────────────────────────────────
