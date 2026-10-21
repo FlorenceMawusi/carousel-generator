@@ -68,8 +68,8 @@ BG_STYLE_PROMPT = (
 # ── Helpers ────────────────────────────────────────────────────────────────────
 def load_fonts():
     base = Path(__file__).parent / "fonts"
-    bold = str(base / "Oswald-Bold.ttf")
-    regular = str(base / "OpenSans-Regular.ttf")
+    bold = str(base / "Impact.ttf")
+    regular = str(base / "Arial.ttf")
     return {
         "headline": ImageFont.truetype(bold, 72),
         "headline_sm": ImageFont.truetype(bold, 58),
