@@ -1,0 +1,8 @@
+.env
+output/
+carousel-assets-repo/
+__pycache__/
+*.pyc
+venv/
+pipeline.log
+.DS_Store
