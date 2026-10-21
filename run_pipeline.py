@@ -67,25 +67,14 @@ BG_STYLE_PROMPT = (
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 def load_fonts():
-    candidates_bold = [
-        "/System/Library/Fonts/Supplemental/Impact.ttf",
-        "/Library/Fonts/Arial Bold.ttf",
-        "/System/Library/Fonts/Helvetica.ttc",
-    ]
-    candidates_regular = [
-        "/Library/Fonts/Arial.ttf",
-        "/System/Library/Fonts/Helvetica.ttc",
-    ]
-    def try_load(paths, size):
-        for p in paths:
-            if Path(p).exists():
-                return ImageFont.truetype(p, size)
-        return ImageFont.load_default()
+    base = Path(__file__).parent / "fonts"
+    bold = str(base / "Oswald-Bold.ttf")
+    regular = str(base / "OpenSans-Regular.ttf")
     return {
-        "headline": try_load(candidates_bold, 72),
-        "headline_sm": try_load(candidates_bold, 58),
-        "body": try_load(candidates_regular, 36),
-        "handle": try_load(candidates_regular, 28),
+        "headline": ImageFont.truetype(bold, 72),
+        "headline_sm": ImageFont.truetype(bold, 58),
+        "body": ImageFont.truetype(regular, 36),
+        "handle": ImageFont.truetype(regular, 28),
     }
 
 
