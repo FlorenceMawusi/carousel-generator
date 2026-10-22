@@ -301,6 +301,32 @@ def post_to_facebook(image_urls: list[str], caption: str):
     print(f"  ✓ Facebook: {resp.json()}")
 
 
+# ── Substack Notes posting ─────────────────────────────────────────────────────
+def post_to_substack_note(caption: str, article: dict):
+    sid = os.environ.get("SUBSTACK_SID")
+    if not sid:
+        log.warning("SUBSTACK_SID not set — skipping Substack Note.")
+        return
+    article_url = f"https://sproutingplant.substack.com/p/{article['slug']}"
+    text = f"{caption}\n\n{article_url}"
+    body = {
+        "body": {
+            "type": "doc",
+            "content": [{"type": "paragraph", "content": [{"type": "text", "text": text}]}]
+        }
+    }
+    resp = requests.post(
+        "https://substack.com/api/v1/comment/feed",
+        json=body,
+        headers={"Cookie": f"substack.sid={sid}"},
+        timeout=30,
+    )
+    if not resp.ok:
+        log.error(f"Substack Note error: {resp.text}")
+    resp.raise_for_status()
+    log.info(f"  ✓ Substack Note: {resp.json().get('id')}")
+
+
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main():
     api_key = os.environ.get("OPENAI_API_KEY")
@@ -341,11 +367,14 @@ def main():
     log.info("Posting to Facebook ...")
     post_to_facebook(image_urls, caption)
 
+    log.info("Posting to Substack Notes ...")
+    post_to_substack_note(caption, article)
+
     posted = load_posted()
     posted.add(article["slug"])
     save_posted(posted)
 
-    log.info(f"Done! '{article['title']}' posted to Instagram and Facebook.")
+    log.info(f"Done! '{article['title']}' posted to Instagram, Facebook, and Substack.")
 
 
 if __name__ == "__main__":

@@ -41,6 +41,7 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
           GH_PAT: ${{ secrets.GH_PAT }}
+          SUBSTACK_SID: ${{ secrets.SUBSTACK_SID }}
         run: python run_pipeline.py
 
       - name: Commit updated posted.json
