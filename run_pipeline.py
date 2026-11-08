@@ -221,8 +221,9 @@ def generate_slides(client: OpenAI, article: dict) -> list[Path]:
         n = slide["slide"]
         print(f"  Generating slide {n}/{total} ...")
         prompt = f"{BG_STYLE_PROMPT} Concept: {slide['visual_direction']}"
-        resp = client.images.generate(model="dall-e-3", prompt=prompt, size="1024x1024", quality="standard", n=1, response_format="b64_json")
-        bg = Image.open(BytesIO(base64.b64decode(resp.data[0].b64_json))).convert("RGBA")
+        resp = client.images.generate(model="dall-e-3", prompt=prompt, size="1024x1024", quality="standard", n=1)
+        img_resp = requests.get(resp.data[0].url, timeout=60)
+        bg = Image.open(BytesIO(img_resp.content)).convert("RGBA")
         final = composite_text(bg, slide, fonts, n, total)
         path = out_dir / f"slide_{n:02d}.png"
         final.save(path, "PNG")
