@@ -17,20 +17,26 @@ CACHE_FILE = Path(__file__).parent / "posts_cache.json"
 
 def fetch_all_posts():
     posts = []
-    for offset in range(0, 100, 10):
+    cursor = None
+    while True:
+        params = {"limit": 12}
+        if cursor:
+            params["cursor"] = cursor
         r = requests.get(
             f"https://{SUBDOMAIN}.substack.com/api/v1/posts",
-            params={"limit": 10, "offset": offset},
+            params=params,
             headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"},
             timeout=15,
         )
         if not r.ok:
             break
-        batch = r.json().get("posts", r.json()) if isinstance(r.json(), dict) else r.json()
+        data = r.json()
+        batch = data.get("posts", []) if isinstance(data, dict) else data
         if not batch:
             break
         posts.extend(batch)
-        if len(batch) < 10:
+        cursor = data.get("nextCursor") if isinstance(data, dict) else None
+        if not cursor:
             break
     return posts
 
